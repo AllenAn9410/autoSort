@@ -1,0 +1,9 @@
+{
+  "pic":["tif","bmp","jpg"],
+  "log":["txt","log","json","sql"],
+  "jar":["zip","war","rar","zip","jar"],
+  "doc":["doc","docx"],
+  "excel":["xls","xlsx"],
+  "app":["exe","bat"],
+  "book":["mobi","epub","pdf"]
+}

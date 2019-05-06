@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import sortTool.AutoSort;
 
-public class TestCrawler {
+public class TestAutoSort {
     @Test
     public void testCrawler() throws Exception {
         ApplicationContext app = new ClassPathXmlApplicationContext("conf/spring-service.xml");

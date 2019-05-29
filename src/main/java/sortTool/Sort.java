@@ -1,9 +1,9 @@
 package sortTool;
 
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -14,14 +14,21 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 @Component
-public class AutoSortImpl implements AutoSort {
+public class Sort {
+    Sort(){
+        System.out.println("sort start");
+    }
+
     private static File f;
     String path = "";
 
-    List<String>listName = new LinkedList();
+    List<String> listName = new LinkedList();
     HashMap<String,String> suffixName = new HashMap<>();
     HashSet<String> suffixSet = new HashSet();
     HashSet<String> pathSet = new HashSet<>();
+
+    @Autowired
+    AutoSortImp autoSortImp;
 
     @Value("classpath:conf/suffix.json")
     public Resource suffixJson;
@@ -29,7 +36,7 @@ public class AutoSortImpl implements AutoSort {
     @Value("classpath:conf/paths.json")
     public Resource pathsJson;
 
-    private void jsonArrayToArr(JSONArray arr,String key){
+    private void jsonArrayToArr(JSONArray arr, String key){
         for(int i=0;i<arr.length();i++){
             String value = (String) arr.get(i);
             suffixName.put(value,key);
@@ -44,37 +51,6 @@ public class AutoSortImpl implements AutoSort {
                 String fileName = ff.getName();
                 inputFileNameToMap(fileName);
             }
-        }
-    }
-
-    @Override
-    public void sort() {
-        try {
-            loadPathJson();
-            loadJsonParam();
-            for(String path : pathSet){
-                this.path = path;
-                createFolder();
-                scanField();
-                for(int i=0;i<listName.size();i++){
-                    String name = listName.get(i);
-                    try{
-                        String suffix = getSuffix(name);
-                        String prefix = getPrefix(name);
-                        if(!isEmpty(suffix) && suffixName.containsKey(suffix)){
-                            String folder = suffixName.get(suffix);
-                            String newPath = path + "\\" + folder + "\\" + prefix + "." + suffix;
-                            String oldPath = path + "\\" + prefix + "." + suffix;
-                            move(newPath,oldPath);
-                            System.out.println(oldPath + "------>" + newPath);
-                        }
-                    } catch (Exception e){
-                    }
-                }
-                listName.clear();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -115,8 +91,8 @@ public class AutoSortImpl implements AutoSort {
     }
 
     private void loadPathJson() throws IOException {
-        String pahtJson = IOUtils.toString(pathsJson.getInputStream(), Charset.forName("UTF-8"));
-        JSONObject jsonObject = new JSONObject(pahtJson);
+        String pathJson = IOUtils.toString(pathsJson.getInputStream(), Charset.forName("UTF-8"));
+        JSONObject jsonObject = new JSONObject(pathJson);
         if (jsonObject != null) {
             JSONArray arr = jsonObject.getJSONArray("path");
             for(Object path : arr){
@@ -155,11 +131,33 @@ public class AutoSortImpl implements AutoSort {
         f.delete();
     }
 
-    @Override
-    public void move(String newPath,String oldPath){
-        f = new File(oldPath);
-        if(f.exists()){
-            f.renameTo(new File(newPath));
+    public void sort() {
+        try {
+            loadPathJson();
+            loadJsonParam();
+            for(String path : pathSet){
+                this.path = path;
+                createFolder();
+                scanField();
+                for(int i=0;i<listName.size();i++){
+                    String name = listName.get(i);
+                    try{
+                        String suffix = getSuffix(name);
+                        String prefix = getPrefix(name);
+                        if(!isEmpty(suffix) && suffixName.containsKey(suffix)){
+                            String folder = suffixName.get(suffix);
+                            String newPath = path + "\\" + folder + "\\" + prefix + "." + suffix;
+                            String oldPath = path + "\\" + prefix + "." + suffix;
+                            autoSortImp.move(newPath,oldPath);
+                            //System.out.println(oldPath + "  ------>> " + newPath);
+                        }
+                    } catch (Exception e){
+                    }
+                }
+                listName.clear();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -169,4 +167,5 @@ public class AutoSortImpl implements AutoSort {
         }
         return true;
     }
+
 }

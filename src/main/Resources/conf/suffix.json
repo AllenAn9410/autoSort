@@ -1,5 +1,5 @@
 {
-  "pic":["tif","bmp","jpg"],
+  "pic":["tif","bmp","jpg","png"],
   "log":["txt","log","json","sql"],
   "jar":["zip","war","rar","zip","jar"],
   "doc":["doc","docx"],

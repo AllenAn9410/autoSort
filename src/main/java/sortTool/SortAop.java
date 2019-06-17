@@ -22,10 +22,10 @@ public class SortAop {
         String newPath = (String)args[0];
         String oldPath = (String)args[1];
         Object rvt = joinPoint.proceed(args);
-        System.out.print(newPath);
+        System.out.print(oldPath);
         System.out.println("   ========");
         System.out.print("========>   ");
-        System.out.print(oldPath);
+        System.out.print(newPath);
         System.out.println("\r\n\r\n");
         return rvt;
     }

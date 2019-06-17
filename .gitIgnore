@@ -1,4 +1,2 @@
-.idea/*
+*.xml
 *.iml
-path
-conf/*
